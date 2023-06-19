@@ -15,12 +15,169 @@ jobs:
     steps:
       - checkout
       - run:
-          name: "Say hello"
-          command: "echo Hello, World!"
+          name: "Clinica"
+          command: "echo APP"
 
 # Orchestrate jobs using workflows
 # See: https://circleci.com/docs/configuration-reference/#workflows
 workflows:
-  say-hello-workflow:
+  clinica:
     jobs:
-      - say-hello
+      -import tkinter as tk
+
+class Paciente:
+    def __init__(self, nombre, apellido, telefono):
+        self.nombre = nombre
+        self.apellido = apellido
+        self.telefono = telefono
+
+class Cita:
+    def __init__(self, paciente, fecha, hora, tipo):
+        self.paciente = paciente
+        self.fecha = fecha
+        self.hora = hora
+        self.tipo = tipo
+
+class ClinicaDental:
+    def __init__(self):
+        self.pacientes = []
+        self.citas = []
+
+    def agregar_paciente(self, nombre, apellido, telefono):
+        paciente = Paciente(nombre, apellido, telefono)
+        self.pacientes.append(paciente)
+
+    def programar_cita(self, paciente, fecha, hora, tipo):
+        cita = Cita(paciente, fecha, hora, tipo)
+        self.citas.append(cita)
+
+    def mostrar_pacientes(self):
+        pacientes_text = ""
+        for paciente in self.pacientes:
+            pacientes_text += f"Nombre: {paciente.nombre} {paciente.apellido}\n"
+            pacientes_text += f"Teléfono: {paciente.telefono}\n\n"
+        return pacientes_text
+
+    def mostrar_citas(self):
+        citas_text = ""
+        for cita in self.citas:
+            citas_text += f"Fecha: {cita.fecha}\n"
+            citas_text += f"Hora: {cita.hora}\n"
+            citas_text += f"Tipo: {cita.tipo}\n"
+            citas_text += f"Paciente: {cita.paciente.nombre} {cita.paciente.apellido}\n\n"
+        return citas_text
+
+# Crear la interfaz de usuario
+class ClinicaDentalGUI:
+    def __init__(self, clinica):
+        self.clinica = clinica
+        self.ventana = tk.Tk()
+        self.ventana.title("Clínica Dental")
+
+        self.etiqueta_usuario = tk.Label(self.ventana, text="Usuario:")
+        self.etiqueta_usuario.pack()
+        self.entry_usuario = tk.Entry(self.ventana)
+        self.entry_usuario.pack()
+
+        self.etiqueta_password = tk.Label(self.ventana, text="Contraseña:")
+        self.etiqueta_password.pack()
+        self.entry_password = tk.Entry(self.ventana, show="*")
+        self.entry_password.pack()
+
+        self.boton_iniciar_sesion = tk.Button(self.ventana, text="Iniciar sesión", command=self.iniciar_sesion)
+        self.boton_iniciar_sesion.pack()
+
+    def iniciar_sesion(self):
+        usuario = self.entry_usuario.get()
+        password = self.entry_password.get()
+
+        if usuario == "admin" and password == "admin123":
+            self.mostrar_ventana_principal()
+        else:
+            self.mostrar_mensaje_error()
+
+    def mostrar_ventana_principal(self):
+        self.ventana.destroy()
+
+        ventana_principal = tk.Tk()
+        ventana_principal.title("Clínica Dental - Panel de Control")
+
+        etiqueta_pacientes = tk.Label(ventana_principal, text="Lista de pacientes:")
+        etiqueta_pacientes.pack()
+
+        area_pacientes = tk.Text(ventana_principal, height=10, width=40)
+        area_pacientes.pack()
+
+        etiqueta_citas = tk.Label(ventana_principal, text="Lista de citas programadas:")
+        etiqueta_citas.pack()
+
+        area_citas = tk.Text(ventana_principal, height=10, width=40)
+        area_citas.pack()
+
+        boton_agregar_paciente = tk.Button(ventana_principal, text="Agregar Paciente", command=self.agregar_paciente)
+        boton_agregar_paciente.pack()
+
+        listbox_pacientes = tk.Listbox(ventana_principal, height=5, width=40)
+        listbox_pacientes.pack()
+
+        etiqueta_fecha = tk.Label(ventana_principal, text="Fecha:")
+        etiqueta_fecha.pack()
+        entry_fecha = tk.Entry(ventana_principal)
+        entry_fecha.pack()
+
+        etiqueta_hora = tk.Label(ventana_principal, text="Hora:")
+        etiqueta_hora.pack()
+        entry_hora = tk.Entry(ventana_principal)
+        entry_hora.pack()
+
+        etiqueta_tipo = tk.Label(ventana_principal, text="Tipo de cita:")
+        etiqueta_tipo.pack()
+        entry_tipo = tk.Entry(ventana_principal)
+        entry_tipo.pack()
+
+        boton_programar_cita = tk.Button(ventana_principal, text="Programar Cita", command=lambda: self.programar_cita(listbox_pacientes.curselection()[0], entry_fecha.get(), entry_hora.get(), entry_tipo.get()))
+        boton_programar_cita.pack()
+
+        pacientes_text = self.clinica.mostrar_pacientes()
+        area_pacientes.insert(tk.END, pacientes_text)
+
+        citas_text = self.clinica.mostrar_citas()
+        area_citas.insert(tk.END, citas_text)
+
+        ventana_principal.mainloop()
+
+    def mostrar_mensaje_error(self):
+        tk.messagebox.showerror("Error de inicio de sesión", "Credenciales incorrectas.")
+
+    def agregar_paciente(self):
+        ventana_agregar_paciente = tk.Tk()
+        ventana_agregar_paciente.title("Agregar Paciente")
+
+        etiqueta_nombre = tk.Label(ventana_agregar_paciente, text="Nombre:")
+        etiqueta_nombre.pack()
+        entry_nombre = tk.Entry(ventana_agregar_paciente)
+        entry_nombre.pack()
+
+        etiqueta_apellido = tk.Label(ventana_agregar_paciente, text="Apellido:")
+        etiqueta_apellido.pack()
+        entry_apellido = tk.Entry(ventana_agregar_paciente)
+        entry_apellido.pack()
+
+        etiqueta_telefono = tk.Label(ventana_agregar_paciente, text="Teléfono:")
+        etiqueta_telefono.pack()
+        entry_telefono = tk.Entry(ventana_agregar_paciente)
+        entry_telefono.pack()
+
+        boton_guardar = tk.Button(ventana_agregar_paciente, text="Guardar", command=lambda: self.guardar_paciente(entry_nombre.get(), entry_apellido.get(), entry_telefono.get()))
+        boton_guardar.pack()
+
+        ventana_agregar_paciente.mainloop()
+
+    def guardar_paciente(self, nombre, apellido, telefono):
+        self.clinica.agregar_paciente(nombre, apellido, telefono)
+
+    def programar_cita(self, paciente_idx, fecha, hora, tipo):
+        paciente = self.clinica.pacientes[paciente_idx]
+        self.clinica.programar_cita(paciente, fecha, hora, tipo)
+
+
