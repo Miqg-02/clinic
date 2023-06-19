@@ -1,14 +1,23 @@
 version: 2.1
 jobs:
-  say-hello:
-
+  build:
     docker:
-      - image: cimg/base:stable
+      - image: cimg/base:2021.04
+        auth:
+          username: mydockerhub-user
+          password: $DOCKERHUB_PASSWORD
     steps:
       - checkout
-      - run:
-          name: "Clinica"
-          command: "echo APP"
+      - run: <command>
+  test:
+    docker:
+      - image: cimg/base:2021.04
+        auth:
+          username: mydockerhub-user
+          password: $DOCKERHUB_PASSWORD
+    steps:
+      - checkout
+      - run: <command>
 workflows:
   clinica:
     jobs:
